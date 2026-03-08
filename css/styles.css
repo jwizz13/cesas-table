@@ -169,28 +169,7 @@ input, textarea, select {
   padding: 16px var(--page-padding) calc(var(--tab-bar-height) + 24px);
 }
 
-#screen-recipes.active {
-  padding-left: 40px;
-  padding-right: 40px;
-}
 
-#screen-recipes .filter-chips {
-  margin-left: -36px;
-  margin-right: -36px;
-}
-
-#screen-recipes .chip-group {
-  flex: 1;
-  justify-content: flex-start;
-}
-
-#screen-recipes .chip-group:nth-child(2) {
-  justify-content: center;
-}
-
-#screen-recipes .chip-group:nth-child(3) {
-  justify-content: flex-end;
-}
 
 /* Main content wrapper — accounts for tab bar */
 .app-content {
@@ -444,20 +423,15 @@ input, textarea, select {
    -------------------------------------------------------------------------- */
 .filter-chips {
   display: flex;
-  justify-content: space-between;
-  gap: 6px;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 16px;
-}
-
-.filter-chips .chip {
-  padding: 4px 8px;
-  font-size: var(--font-xs);
 }
 
 .chip-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
 .filter-chips::-webkit-scrollbar {
