@@ -711,14 +711,60 @@ Two growth loops:
 
 ## Current State
 
-**Last Updated:** Mar 7, 2026
-**Status:** Phase 1 in progress. Supabase schema deployed. App shell built (HTML, CSS, JS, SW). Auth working. Testing locally.
+**Last Updated:** Mar 7, 2026 (evening)
+**Status:** Phase 1 MVP deployed and live.
 
-**BEFORE LAUNCH CHECKLIST:**
-- [ ] Turn email confirmation back ON in Supabase (Authentication → Providers → Email → "Confirm email"). Disabled for development to avoid rate limit pain.
-- [ ] Update Supabase Site URL + Redirect URLs to GitHub Pages URL
-- [ ] Remove debug error overlay from index.html
-- [ ] Set CACHE_NAME in sw.js to final version
+**Live URL:** https://jwizz13.github.io/cesas-table/
+**GitHub:** https://github.com/jwizz13/cesas-table
+**Supabase Project ID:** pucavnfdebaipwklpoaa
+
+### What's Working
+- Auth (login/signup) — Jesse has an account and can log in
+- Recipe CRUD — add, edit, soft-delete recipes with full metadata
+- Search and filter chips (cuisine, meal type, protein) — stacked rows
+- URL import with Schema.org JSON-LD extraction
+- Custom tag creation in recipe form
+- Settings (display name, food exclusions, family members, invite friends)
+- Service worker caching (cache-first app shell, network-only Supabase API)
+- PWA manifest with share target
+- GitHub Pages deployment (push to main = deploy)
+
+### What Was Done This Session
+1. Built the entire Phase 1 app from scratch (HTML, CSS, JS, data, SW, manifest, Supabase schema)
+2. Debugged and fixed: Supabase CDN naming conflict (`supabase` → `sb`), service worker caching stale files, Safari HTTPS issues, email confirmation redirect loop, toast class mismatch, search icon class mismatch, manifest icon filenames, GitHub Pages relative paths
+3. Extensive CSS styling: mobile-first design with terracotta/sage palette, horizontal recipe cards, stacked filter chips, instruction step numbers hanging left, recipe detail layout with back arrow offset
+4. Deployed to GitHub Pages, enabled Pages via API
+5. Supabase Site URL + Redirect URLs configured for GitHub Pages
+
+### Known Issues / Next Steps
+- **Service worker caching is aggressive.** Users may need to unregister SW + clear caches to see updates. Consider switching to network-first for app shell during active development, or adding an update prompt.
+- **Duplicate recipe** — Jesse added the same recipe twice during testing. Should delete the duplicate.
+- **Email confirmation is OFF** for development. Must re-enable before sharing with others (Supabase → Authentication → Providers → Email → "Confirm email").
+- **Supabase anon key is in source code.** This is normal for Supabase (RLS protects data), but worth noting. The key is: `eyJhbGci...07rs` (committed to public repo — this is the intended pattern per Supabase docs, RLS is the security layer).
+- **Edge Functions not deployed yet:** `send-invite` and `signup-notify` (email notifications). Invites currently just create a DB record, no email sent.
+- **No recipe-parser.js yet** — URL import uses inline Schema.org extraction in app.js. Claude Haiku fallback for sites without structured data is planned but not built.
+- **Icons are solid-color placeholders** — need real app icons designed.
+- **CSS class mismatch cleanup** — old `.recipe-card-image`, `.recipe-card-body` etc. rules in CSS are dead code (JS uses `.card-image`, `.card-body`). Should clean up.
+
+### Design Decisions Made With Jesse
+- Horizontal recipe cards (small 48px thumbnail left, text right) — not a grid
+- Filter chips stacked vertically by category (cuisine, meal type, protein) with spacing
+- + button in header row next to "My Recipes" (not a FAB)
+- Instruction step numbers hang left of content with 40px offset and 16px gap
+- Back arrow on detail screen hangs left of content block
+- Meta items (Servings, Prep, etc.) are inline — "Servings 6" not stacked
+- Meta labels same color as values (not muted)
+- No image placeholder icons — just gradient blocks
+- Recipe card titles use smaller font (font-sm, 13px)
+- Tagline: "Meal planning for family and friends"
+
+### BEFORE SHARING WITH OTHERS CHECKLIST
+- [ ] Turn email confirmation back ON in Supabase (Authentication → Providers → Email → "Confirm email")
+- [ ] Delete duplicate test recipe from database
+- [ ] Clean up dead CSS rules
+- [ ] Generate proper app icons (not solid-color placeholders)
+- [ ] Test full recipe CRUD flow end-to-end on live site
+- [ ] Test on iPhone Safari (PWA install, auth, recipe add)
 
 ---
 
@@ -738,8 +784,20 @@ Two growth loops:
 
 ---
 
+## Don't Waste Time On
+- **Safari localhost testing** — Safari's HTTPS-Only mode blocks localhost HTTP. Use Chrome for local dev, or test on the live GitHub Pages URL.
+- **Supabase CDN short URL** — Must use full UMD path `@supabase/supabase-js@2/dist/umd/supabase.min.js`. We downloaded it locally as `js/supabase.min.js` instead.
+- **Naming the Supabase client `supabase`** — CDN creates a global `var supabase`. Our client MUST be named `sb`. This is documented in `supabase-templates`.
+- **Service worker quick fixes** — When debugging CSS/JS changes not appearing, the SW is almost always the cause. Bump CACHE_NAME, or better: unregister SW + clear caches via DevTools console: `navigator.serviceWorker.getRegistrations().then(r => r.forEach(sw => sw.unregister())); caches.keys().then(k => k.forEach(c => caches.delete(c)));`
+
+## Tech Debt & Known Issues
+- Dead CSS rules for old class names (`.recipe-card-image`, `.recipe-card-body`, `.recipe-card-title`, `.recipe-card-meta`, `.recipe-card-tags`, `.recipe-detail-image`, `.recipe-detail-content`, etc.) — should be removed
+- SW cache version is at v24 — consider resetting to v1 after stabilizing
+- `allorigins.win` CORS proxy used for URL import — fragile, should be replaced with Supabase Edge Function
+
 ## Version History
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-03-07 | 0.1.0 | Phase 1 MVP deployed. Auth, recipe CRUD, search/filter, URL import, settings. Live on GitHub Pages. |
 | 2026-03-07 | 0.0.0 | Project plan created. CLAUDE.md written. |
