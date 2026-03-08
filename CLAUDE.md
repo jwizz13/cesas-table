@@ -761,7 +761,7 @@ Two growth loops:
 ### BEFORE SHARING WITH OTHERS CHECKLIST
 - [ ] Turn email confirmation back ON in Supabase (Authentication → Providers → Email → "Confirm email")
 - [ ] Delete duplicate test recipe from database
-- [ ] Clean up dead CSS rules
+- [x] Clean up dead CSS rules
 - [ ] Generate proper app icons (not solid-color placeholders)
 - [ ] Test full recipe CRUD flow end-to-end on live site
 - [ ] Test on iPhone Safari (PWA install, auth, recipe add)
@@ -791,7 +791,7 @@ Two growth loops:
 - **Service worker quick fixes** — When debugging CSS/JS changes not appearing, the SW is almost always the cause. Bump CACHE_NAME, or better: unregister SW + clear caches via DevTools console: `navigator.serviceWorker.getRegistrations().then(r => r.forEach(sw => sw.unregister())); caches.keys().then(k => k.forEach(c => caches.delete(c)));`
 
 ## Tech Debt & Known Issues
-- Dead CSS rules for old class names (`.recipe-card-image`, `.recipe-card-body`, `.recipe-card-title`, `.recipe-card-meta`, `.recipe-card-tags`, `.recipe-detail-image`, `.recipe-detail-content`, etc.) — should be removed
+- ~~Dead CSS rules~~ — cleaned up (removed ~280 lines of unused rules: FAB, tab-bar-item, header/header-action, login-card, settings-item, toggle, toast-container, instruction-list, detail-tags, ingredient-checkbox, app-content/container)
 - SW cache version is at v24 — consider resetting to v1 after stabilizing
 - `allorigins.win` CORS proxy used for URL import — fragile, should be replaced with Supabase Edge Function
 

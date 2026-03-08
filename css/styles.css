@@ -72,8 +72,6 @@
   /* Layout */
   --tab-bar-height: 56px;
   --header-height: 56px;
-  --fab-size: 56px;
-  --fab-bottom-offset: 80px; /* tab bar + spacing */
   --max-content-width: 480px;
   --page-padding: 20px;
 }
@@ -170,12 +168,6 @@ input, textarea, select {
 }
 
 
-
-/* Main content wrapper — accounts for tab bar */
-.app-content {
-  padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-md));
-}
-
 /* --------------------------------------------------------------------------
    Login Screen
    -------------------------------------------------------------------------- */
@@ -239,23 +231,6 @@ input, textarea, select {
   margin-bottom: var(--space-lg);
 }
 
-.login-card .login-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.login-card .login-form .form-group {
-  text-align: left;
-}
-
-.login-card .login-error {
-  color: var(--color-error);
-  font-size: var(--font-sm);
-  min-height: 1.25em;
-  margin-top: var(--space-xs);
-}
-
 /* --------------------------------------------------------------------------
    Bottom Tab Bar
    -------------------------------------------------------------------------- */
@@ -274,72 +249,6 @@ input, textarea, select {
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 100;
   box-shadow: 0 -2px 8px rgba(61, 64, 91, 0.06);
-}
-
-.tab-bar-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  flex: 1;
-  padding: var(--space-xs) 0;
-  color: var(--color-text-muted);
-  transition: color var(--transition-fast);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.tab-bar-item .tab-icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
-.tab-bar-item .tab-label {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-medium);
-}
-
-.tab-bar-item.active {
-  color: var(--color-primary);
-}
-
-.tab-bar-item:active {
-  opacity: 0.7;
-}
-
-/* --------------------------------------------------------------------------
-   Header / Top Bar
-   -------------------------------------------------------------------------- */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--header-height);
-  padding: 0 var(--space-md);
-  background: var(--color-background-card);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.header h1 {
-  font-size: var(--font-lg);
-  font-weight: var(--weight-bold);
-}
-
-.header-action {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-circle);
-  color: var(--color-text);
-  transition: background var(--transition-fast);
-}
-
-.header-action:active {
-  background: var(--color-border);
 }
 
 /* --------------------------------------------------------------------------
@@ -601,13 +510,6 @@ input, textarea, select {
   font-size: var(--font-sm);
 }
 
-.detail-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: var(--space-md);
-}
-
 .detail-source {
   margin-bottom: var(--space-md);
 }
@@ -639,55 +541,11 @@ input, textarea, select {
 }
 
 .ingredient-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-md);
   padding: var(--space-sm) 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.ingredient-item .ingredient-checkbox {
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1px;
-  transition: all var(--transition-fast);
-  color: transparent;
-}
-
-.ingredient-item.checked .ingredient-checkbox {
-  background: var(--color-secondary);
-  border-color: var(--color-secondary);
-  color: #FFFFFF;
-}
-
-.ingredient-item.checked .ingredient-text {
-  text-decoration: line-through;
-  color: var(--color-text-light);
-}
-
-.ingredient-item .ingredient-text {
-  flex: 1;
   line-height: 1.5;
 }
 
-.ingredient-text .ingredient-amount {
-  font-weight: var(--weight-semibold);
-}
-
 /* Instruction steps */
-.instruction-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
 .instruction-step {
   display: flex;
   gap: var(--space-md);
@@ -1115,33 +973,6 @@ select.error:focus {
 }
 
 /* --------------------------------------------------------------------------
-   Floating Action Button (FAB)
-   -------------------------------------------------------------------------- */
-.fab {
-  position: fixed;
-  bottom: calc(var(--fab-bottom-offset) + env(safe-area-inset-bottom));
-  right: var(--space-md);
-  width: var(--fab-size);
-  height: var(--fab-size);
-  background: var(--color-primary);
-  color: #FFFFFF;
-  border-radius: var(--radius-circle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-  box-shadow: var(--shadow-lg);
-  z-index: 90;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.fab:active {
-  transform: scale(0.92);
-  box-shadow: var(--shadow-md);
-}
-
-/* --------------------------------------------------------------------------
    Settings Screen
    -------------------------------------------------------------------------- */
 .settings-content {
@@ -1156,90 +987,6 @@ select.error:focus {
 
 .settings-section {
   margin-bottom: var(--space-xl);
-}
-
-.settings-section-title {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
-  padding-left: var(--space-md);
-}
-
-.settings-group {
-  background: var(--color-background-card);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.settings-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md);
-  min-height: 48px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.settings-item:not(:last-child) {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.settings-item:active {
-  background: var(--color-background);
-}
-
-.settings-item-label {
-  font-size: var(--font-base);
-  color: var(--color-text);
-}
-
-.settings-item-value {
-  font-size: var(--font-sm);
-  color: var(--color-text-muted);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.settings-item-danger .settings-item-label {
-  color: var(--color-error);
-}
-
-/* Toggle switch */
-.toggle {
-  position: relative;
-  width: 48px;
-  height: 28px;
-  background: var(--color-border);
-  border-radius: var(--radius-pill);
-  transition: background var(--transition-fast);
-  cursor: pointer;
-}
-
-.toggle.active {
-  background: var(--color-secondary);
-}
-
-.toggle::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 24px;
-  height: 24px;
-  background: #FFFFFF;
-  border-radius: var(--radius-circle);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  transition: transform var(--transition-fast);
-}
-
-.toggle.active::after {
-  transform: translateX(20px);
 }
 
 /* --------------------------------------------------------------------------
@@ -1298,18 +1045,6 @@ select.error:focus {
 /* --------------------------------------------------------------------------
    Toast / Notification
    -------------------------------------------------------------------------- */
-.toast-container {
-  position: fixed;
-  top: calc(var(--space-md) + env(safe-area-inset-top));
-  left: var(--space-md);
-  right: var(--space-md);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  pointer-events: none;
-}
-
 .toast {
   position: fixed;
   top: calc(var(--space-lg) + env(safe-area-inset-top));
@@ -1560,10 +1295,6 @@ select.error:focus {
     gap: var(--space-md);
   }
 
-  .login-card {
-    padding: var(--space-2xl);
-  }
-
   .recipe-form {
     padding: var(--space-lg);
   }
@@ -1581,15 +1312,6 @@ select.error:focus {
    Responsive — Desktop (1024px+)
    -------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
-  .app-container {
-    max-width: var(--max-content-width);
-    margin: 0 auto;
-  }
-
-  .recipe-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
   .recipe-form {
     max-width: 680px;
     margin: 0 auto;
@@ -1602,9 +1324,5 @@ select.error:focus {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     border-left: 1px solid var(--color-border);
     border-right: 1px solid var(--color-border);
-  }
-
-  .fab {
-    right: calc(50% - var(--max-content-width) / 2 + var(--space-lg));
   }
 }

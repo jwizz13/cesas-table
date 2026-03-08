@@ -351,7 +351,7 @@ async function showRecipeDetail(recipeId) {
   if (recipe.instructions) {
     // Split by newlines to create numbered steps
     const steps = recipe.instructions.split('\n').filter(s => s.trim());
-    instructionsEl.innerHTML = steps.map((step, i) => `<div class="instruction-step"><span class="step-number">${i + 1}</span><p>${escapeHtml(step.trim())}</p></div>`).join('');
+    instructionsEl.innerHTML = steps.map((step, i) => `<div class="instruction-step"><span class="step-number">${i + 1}</span><p class="step-text">${escapeHtml(step.trim())}</p></div>`).join('');
   } else {
     instructionsEl.innerHTML = '<p class="text-muted">No instructions added yet.</p>';
   }
