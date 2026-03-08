@@ -754,53 +754,97 @@ input, textarea, select {
 }
 
 /* Chip selector for multi-select fields (cuisine, meal_type, etc.) */
-.chip-selector {
+.chip-select {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: 6px;
 }
 
-.chip-selector .chip {
+.chip-select .chip {
   cursor: pointer;
   user-select: none;
 }
 
-/* Dynamic ingredient rows */
-.ingredient-row {
+/* Form row — horizontal grouping for small inputs */
+.form-row {
   display: flex;
   gap: var(--space-sm);
-  align-items: center;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
-.ingredient-row .input-amount {
-  width: 80px;
-  min-width: 80px;
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
 }
 
-.ingredient-row .input-unit {
-  width: 72px;
-  min-width: 72px;
-}
-
-.ingredient-row .input-name {
+.form-group-small {
   flex: 1;
 }
 
-.ingredient-row .remove-row {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-error);
-  border-radius: var(--radius-circle);
-  transition: background var(--transition-fast);
+/* Dynamic ingredient rows */
+.ingredient-row {
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
-.ingredient-row .remove-row:active {
-  background: var(--color-error-light);
+.ingredient-row-main {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.ingredient-row-main .ingredient-name {
+  flex: 1;
+}
+
+.ingredient-row-main .ingredient-qty {
+  width: 60px;
+  min-width: 60px;
+}
+
+.ingredient-row-main .ingredient-unit {
+  width: 70px;
+  min-width: 70px;
+}
+
+.ingredient-row-extra {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ingredient-row-extra .ingredient-section {
+  flex: 1;
+  min-width: 100px;
+}
+
+.ingredient-row-extra .ingredient-notes {
+  flex: 1;
+  min-width: 100px;
+}
+
+.ingredient-optional-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.ingredient-optional-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+}
+
+.btn-remove-ingredient {
+  color: var(--color-error);
+  flex-shrink: 0;
 }
 
 .add-row-btn {
