@@ -631,92 +631,6 @@ input, textarea, select {
   gap: var(--space-md);
 }
 
-.recipe-detail-back {
-  position: absolute;
-  top: var(--space-md);
-  left: var(--space-md);
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-circle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text);
-  font-size: 1.2rem;
-  z-index: 10;
-}
-
-.recipe-detail-actions {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  display: flex;
-  gap: var(--space-sm);
-  z-index: 10;
-}
-
-.recipe-detail-actions button {
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-circle);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text);
-  font-size: 1.1rem;
-}
-
-.recipe-detail-content {
-  padding: var(--space-lg) var(--space-md);
-}
-
-.recipe-detail-content h1 {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  line-height: 1.25;
-  margin-bottom: var(--space-sm);
-}
-
-.recipe-detail-content .recipe-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  color: var(--color-text-muted);
-  font-size: var(--font-sm);
-  margin-bottom: var(--space-lg);
-}
-
-.recipe-detail-content .recipe-meta-row span {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.recipe-detail-content .recipe-description {
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-lg);
-  line-height: 1.6;
-}
-
-.recipe-section {
-  margin-bottom: var(--space-xl);
-}
-
-.recipe-section h2 {
-  font-size: var(--font-lg);
-  font-weight: var(--weight-semibold);
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 2px solid var(--color-primary);
-  display: inline-block;
-}
-
 /* Ingredient list — checkable items */
 .ingredient-list {
   display: flex;
@@ -1580,18 +1494,6 @@ select.error:focus {
     gap: var(--space-md);
   }
 
-  .recipe-card-title {
-    font-size: var(--font-md);
-  }
-
-  .recipe-detail-content {
-    padding: var(--space-xl) var(--space-lg);
-  }
-
-  .recipe-detail-content h1 {
-    font-size: var(--font-2xl);
-  }
-
   .login-card {
     padding: var(--space-2xl);
   }
@@ -1620,16 +1522,6 @@ select.error:focus {
 
   .recipe-grid {
     grid-template-columns: repeat(4, 1fr);
-  }
-
-  .recipe-detail-content {
-    max-width: 720px;
-    margin: 0 auto;
-  }
-
-  .recipe-detail-image {
-    aspect-ratio: 16 / 7;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
 
   .recipe-form {
