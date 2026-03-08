@@ -326,7 +326,6 @@ async function showRecipeDetail(recipeId) {
   // Tags
   const allTags = [...(recipe.cuisine || []), ...(recipe.meal_type || []), ...(recipe.protein || []), ...(recipe.tags || []), ...(recipe.holidays || [])];
   $('#detail-tags').innerHTML = allTags.map(t => `<span class="chip chip-sm">${escapeHtml(t)}</span>`).join('');
-  $('#detail-tags').classList.toggle('hidden', allTags.length === 0);
 
   // Source URL
   const sourceEl = $('#detail-source');

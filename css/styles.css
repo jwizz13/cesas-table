@@ -356,9 +356,19 @@ input, textarea, select {
   color: var(--color-text);
 }
 
+.detail-header-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+  margin: 0 8px;
+}
+
 .screen-header .header-actions {
   display: flex;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -406,20 +416,15 @@ input, textarea, select {
    -------------------------------------------------------------------------- */
 .filter-chips {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
 .chip-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  width: 100%;
-}
-
-.chip-group + .chip-group {
-  margin-top: 12px;
+  gap: 4px;
 }
 
 .filter-chips::-webkit-scrollbar {
