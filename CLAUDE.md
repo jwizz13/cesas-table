@@ -729,22 +729,27 @@ Two growth loops:
 - PWA manifest with share target
 - GitHub Pages deployment (push to main = deploy)
 
-### What Was Done This Session
+### What Was Done (Sessions 1 & 2)
 1. Built the entire Phase 1 app from scratch (HTML, CSS, JS, data, SW, manifest, Supabase schema)
 2. Debugged and fixed: Supabase CDN naming conflict (`supabase` → `sb`), service worker caching stale files, Safari HTTPS issues, email confirmation redirect loop, toast class mismatch, search icon class mismatch, manifest icon filenames, GitHub Pages relative paths
 3. Extensive CSS styling: mobile-first design with terracotta/sage palette, horizontal recipe cards, stacked filter chips, instruction step numbers hanging left, recipe detail layout with back arrow offset
 4. Deployed to GitHub Pages, enabled Pages via API
 5. Supabase Site URL + Redirect URLs configured for GitHub Pages
+6. Cleaned ~280 lines of dead CSS (FAB, tab-bar-item, header/header-action, login-card, settings-item, toggle, toast-container, detail-tags, ingredient-checkbox, app-content/container)
+7. Added ingredient string parser for URL imports — "2 cups flour" parses into qty/unit/name
+8. Added save button loading state ("Saving..." + disabled during save)
+9. Fixed instruction step `.step-text` class for proper flex styling
+10. Synced data.js with HTML chip values (Cajun, shrimp, tofu, slow-cooker, instant-pot, meal-prep)
+11. Updated supabase-templates with `sb` naming and CDN UMD path fixes
 
 ### Known Issues / Next Steps
 - **Service worker caching is aggressive.** Users may need to unregister SW + clear caches to see updates. Consider switching to network-first for app shell during active development, or adding an update prompt.
 - **Duplicate recipe** — Jesse added the same recipe twice during testing. Should delete the duplicate.
 - **Email confirmation is OFF** for development. Must re-enable before sharing with others (Supabase → Authentication → Providers → Email → "Confirm email").
-- **Supabase anon key is in source code.** This is normal for Supabase (RLS protects data), but worth noting. The key is: `eyJhbGci...07rs` (committed to public repo — this is the intended pattern per Supabase docs, RLS is the security layer).
+- **Supabase anon key is in source code.** This is normal for Supabase (RLS protects data), but worth noting (committed to public repo — this is the intended pattern per Supabase docs, RLS is the security layer).
 - **Edge Functions not deployed yet:** `send-invite` and `signup-notify` (email notifications). Invites currently just create a DB record, no email sent.
 - **No recipe-parser.js yet** — URL import uses inline Schema.org extraction in app.js. Claude Haiku fallback for sites without structured data is planned but not built.
 - **Icons are solid-color placeholders** — need real app icons designed.
-- **CSS class mismatch cleanup** — old `.recipe-card-image`, `.recipe-card-body` etc. rules in CSS are dead code (JS uses `.card-image`, `.card-body`). Should clean up.
 
 ### Design Decisions Made With Jesse
 - Horizontal recipe cards (small 48px thumbnail left, text right) — not a grid
@@ -791,13 +796,15 @@ Two growth loops:
 - **Service worker quick fixes** — When debugging CSS/JS changes not appearing, the SW is almost always the cause. Bump CACHE_NAME, or better: unregister SW + clear caches via DevTools console: `navigator.serviceWorker.getRegistrations().then(r => r.forEach(sw => sw.unregister())); caches.keys().then(k => k.forEach(c => caches.delete(c)));`
 
 ## Tech Debt & Known Issues
-- ~~Dead CSS rules~~ — cleaned up (removed ~280 lines of unused rules: FAB, tab-bar-item, header/header-action, login-card, settings-item, toggle, toast-container, instruction-list, detail-tags, ingredient-checkbox, app-content/container)
-- SW cache version is at v24 — consider resetting to v1 after stabilizing
+- ~~Dead CSS rules~~ — cleaned up
+- SW cache version is at v30 — consider resetting to v1 after stabilizing
 - `allorigins.win` CORS proxy used for URL import — fragile, should be replaced with Supabase Edge Function
+- `data.js` constants not used to render HTML chips (chips are hardcoded in HTML) — could DRY up by generating chips from data.js in JS
 
 ## Version History
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-03-07 | 0.1.1 | Code quality: removed ~280 lines dead CSS, added ingredient string parser for URL imports, save button loading state, instruction step styling fix, data.js sync. |
 | 2026-03-07 | 0.1.0 | Phase 1 MVP deployed. Auth, recipe CRUD, search/filter, URL import, settings. Live on GitHub Pages. |
 | 2026-03-07 | 0.0.0 | Project plan created. CLAUDE.md written. |
