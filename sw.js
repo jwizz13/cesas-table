@@ -8,7 +8,7 @@
 //   - Everything else: network-first, cache fallback
 // ============================================================
 
-const CACHE_NAME = 'cesas-table-v26';
+const CACHE_NAME = 'cesas-table-v27';
 
 // App shell files to pre-cache on install
 const APP_SHELL = [

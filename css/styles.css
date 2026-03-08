@@ -739,12 +739,28 @@ input, textarea, select {
   margin-bottom: var(--space-md);
 }
 
+fieldset.form-group {
+  border: none;
+  padding: 0;
+}
+
+fieldset.form-group legend {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
 .form-group label {
   display: block;
   font-size: var(--font-sm);
   font-weight: var(--weight-medium);
   color: var(--color-text);
   margin-bottom: var(--space-xs);
+}
+
+.required {
+  color: var(--color-error);
 }
 
 .form-group .form-hint {
@@ -1295,6 +1311,11 @@ select.error:focus {
 }
 
 .toast {
+  position: fixed;
+  top: calc(var(--space-lg) + env(safe-area-inset-top));
+  left: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 1000;
   background: var(--color-text);
   color: #FFFFFF;
   padding: var(--space-md) var(--space-lg);
@@ -1302,6 +1323,7 @@ select.error:focus {
   font-size: var(--font-sm);
   font-weight: var(--weight-medium);
   box-shadow: var(--shadow-lg);
+  text-align: center;
   transform: translateY(-20px);
   opacity: 0;
   transition: all var(--transition-base);
