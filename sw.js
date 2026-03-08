@@ -8,16 +8,16 @@
 //   - Everything else: network-first, cache fallback
 // ============================================================
 
-const CACHE_NAME = 'cesas-table-v23';
+const CACHE_NAME = 'cesas-table-v24';
 
 // App shell files to pre-cache on install
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/data.js',
-  '/manifest.json'
+  './',
+  './index.html',
+  './css/styles.css',
+  './js/app.js',
+  './js/data.js',
+  './manifest.json'
 ];
 
 // ------------------------------------------------------------
@@ -70,7 +70,11 @@ self.addEventListener('fetch', (event) => {
   // --- App shell & navigation: cache-first, network fallback ---
   // Serves the cached version instantly; falls back to network if not cached
   const isNavigation = event.request.mode === 'navigate';
-  const isAppShell = APP_SHELL.some((path) => url.pathname === path || url.pathname === path.replace('/index.html', '/'));
+  const basePath = self.registration.scope.replace(url.origin, '');
+  const isAppShell = APP_SHELL.some((path) => {
+    const fullPath = basePath + path.replace('./', '');
+    return url.pathname === fullPath || url.pathname === fullPath.replace('index.html', '');
+  });
 
   if (isNavigation || isAppShell) {
     event.respondWith(
