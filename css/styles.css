@@ -373,14 +373,9 @@ input, textarea, select {
   margin-bottom: 20px;
 }
 
-#screen-recipe-detail .screen-header {
-  position: relative;
-  padding-left: 40px;
-}
-
 #screen-recipe-detail .screen-header #detail-back-btn {
-  position: absolute;
-  left: 0;
+  margin-left: -40px;
+  margin-right: var(--space-md);
 }
 
 .screen-header h2 {
