@@ -893,12 +893,105 @@ function parseInstructions(instructions) {
 
 function parseIngredients(ingredients) {
   if (!ingredients || !Array.isArray(ingredients)) return [];
-  return ingredients.map((ing, i) => ({
-    name: typeof ing === 'string' ? ing : ing.name || '',
-    quantity: null,
-    unit: null,
-    sort_order: i
-  }));
+  return ingredients.map((ing, i) => {
+    const raw = typeof ing === 'string' ? ing : ing.name || '';
+    const parsed = parseIngredientString(raw);
+    return { ...parsed, sort_order: i };
+  });
+}
+
+// Parse "2 cups all-purpose flour" → { quantity: 2, unit: "cups", name: "all-purpose flour" }
+function parseIngredientString(str) {
+  const result = { name: str.trim(), quantity: null, unit: null, notes: null };
+  if (!str) return result;
+
+  // Extract parenthetical notes: "diced", "room temperature", etc.
+  let text = str.trim();
+  const notesMatch = text.match(/,\s*(.+)$/);
+  if (notesMatch) {
+    result.notes = notesMatch[1].trim();
+    text = text.slice(0, notesMatch.index).trim();
+  }
+
+  // Known units (ordered longest first to match "fl oz" before "oz")
+  const unitPatterns = [
+    'tablespoons?', 'teaspoons?', 'fl oz', 'fluid ounces?',
+    'pounds?', 'ounces?', 'cups?', 'quarts?', 'pints?', 'gallons?',
+    'liters?', 'milliliters?', 'grams?', 'kilograms?',
+    'tbsp', 'tsp', 'oz', 'lbs?', 'kg', 'ml', 'g',
+    'cloves?', 'slices?', 'pieces?', 'bunche?s?', 'cans?',
+    'packages?', 'pinch(?:es)?', 'dash(?:es)?', 'heads?', 'stalks?',
+    'sprigs?', 'handfuls?', 'sticks?', 'whole', 'large', 'medium', 'small'
+  ];
+  const unitRegex = new RegExp(`^(${unitPatterns.join('|')})\\b\\s*`, 'i');
+
+  // Match quantity at the start: whole numbers, decimals, fractions, mixed numbers
+  // Handles: "2", "1.5", "1/2", "1 1/2", "½"
+  const unicodeFractions = { '\u00BC': 0.25, '\u00BD': 0.5, '\u00BE': 0.75, '\u2153': 1/3, '\u2154': 2/3, '\u215B': 0.125, '\u215C': 0.375, '\u215D': 0.625, '\u215E': 0.875 };
+  const qtyMatch = text.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+\.?\d*|[¼½¾⅓⅔⅛⅜⅝⅞])\s*/);
+
+  if (qtyMatch) {
+    const qtyStr = qtyMatch[1].trim();
+    // Parse the quantity
+    if (unicodeFractions[qtyStr]) {
+      result.quantity = unicodeFractions[qtyStr];
+    } else if (qtyStr.includes('/')) {
+      // Handle "1 1/2" or "1/2"
+      const parts = qtyStr.split(/\s+/);
+      if (parts.length === 2) {
+        const [num, den] = parts[1].split('/');
+        result.quantity = parseInt(parts[0]) + parseInt(num) / parseInt(den);
+      } else {
+        const [num, den] = parts[0].split('/');
+        result.quantity = parseInt(num) / parseInt(den);
+      }
+    } else {
+      result.quantity = parseFloat(qtyStr);
+    }
+
+    text = text.slice(qtyMatch[0].length).trim();
+
+    // Try to match a unit after the quantity
+    // Also handle "(15 oz)" container patterns
+    const containerMatch = text.match(/^\([\d.]+\s*(?:oz|ounce|fl oz)\)\s*/i);
+    if (containerMatch) {
+      // Keep container info in notes: "(15 oz)"
+      result.notes = result.notes ? containerMatch[0].trim() + ', ' + result.notes : containerMatch[0].trim();
+      text = text.slice(containerMatch[0].length).trim();
+    }
+
+    const unitMatch = text.match(unitRegex);
+    if (unitMatch) {
+      result.unit = normalizeUnit(unitMatch[1]);
+      text = text.slice(unitMatch[0].length).trim();
+      // Remove "of" after unit: "cups of flour" → "flour"
+      text = text.replace(/^of\s+/i, '');
+    }
+  }
+
+  result.name = text || result.name;
+  return result;
+}
+
+function normalizeUnit(unit) {
+  const u = unit.toLowerCase();
+  const map = {
+    'tablespoon': 'tbsp', 'tablespoons': 'tbsp',
+    'teaspoon': 'tsp', 'teaspoons': 'tsp',
+    'ounce': 'oz', 'ounces': 'oz', 'fluid ounce': 'fl oz', 'fluid ounces': 'fl oz',
+    'pound': 'lbs', 'pounds': 'lbs', 'lb': 'lbs',
+    'cup': 'cups',
+    'gram': 'grams', 'kilogram': 'kg', 'kilograms': 'kg',
+    'milliliter': 'ml', 'milliliters': 'ml',
+    'liter': 'liters',
+    'clove': 'cloves', 'slice': 'slices', 'piece': 'pieces',
+    'bunch': 'bunches', 'can': 'cans', 'package': 'packages',
+    'pinch': 'pinch', 'pinches': 'pinch',
+    'dash': 'dash', 'dashes': 'dash',
+    'head': 'heads', 'stalk': 'stalks', 'sprig': 'sprigs',
+    'handful': 'handfuls', 'stick': 'sticks',
+  };
+  return map[u] || u;
 }
 
 function populateFormFromImport(recipe) {

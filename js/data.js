@@ -7,6 +7,7 @@
 
 const CUISINES = [
   "American",
+  "Cajun",
   "Chinese",
   "French",
   "Greek",
@@ -39,9 +40,11 @@ const PROTEINS = [
   "beef",
   "pork",
   "fish",
+  "shrimp",
   "seafood",
   "turkey",
   "lamb",
+  "tofu",
   "vegetarian",
   "vegan",
 ];
@@ -55,6 +58,9 @@ const DEFAULT_TAGS = [
   "make-ahead",
   "one-pot",
   "grilling",
+  "slow-cooker",
+  "instant-pot",
+  "meal-prep",
   "comfort-food",
   "healthy",
   "budget",
