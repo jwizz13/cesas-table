@@ -538,6 +538,10 @@ async function saveRecipe() {
     return;
   }
 
+  const saveBtn = $('#form-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+
   const recipeData = {
     owner_id: currentUser.id,
     title,
@@ -603,6 +607,9 @@ async function saveRecipe() {
   } catch (err) {
     console.error(`${LOG} Save error:`, err.message);
     showToast('Failed to save recipe: ' + err.message, 'error');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
   }
 }
 
