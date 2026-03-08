@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2d6a4f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Meal planning and recipe management for families">
+
+  <title>Cesa's Table</title>
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- LOGIN / SIGNUP SCREEN                                        -->
+  <!-- ============================================================ -->
+  <section id="screen-login" class="screen active">
+    <div class="login-container">
+      <div class="login-logo">
+        <h1>Cesa's Table</h1>
+        <p class="login-tagline">Meal planning for family and friends</p>
+      </div>
+
+      <form id="auth-form" autocomplete="on">
+        <!-- Display name — only shown in signup mode -->
+        <div id="signup-fields" class="hidden">
+          <label for="auth-display-name">Display Name</label>
+          <input type="text" id="auth-display-name" name="display_name" placeholder="Your name" autocomplete="name">
+        </div>
+
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+
+        <label for="auth-password">Password</label>
+        <input type="password" id="auth-password" name="password" placeholder="Password" autocomplete="current-password" required>
+
+        <button type="submit" id="auth-submit-btn" class="btn btn-primary">Log In</button>
+
+        <p class="auth-toggle">
+          <span id="auth-toggle-text">Don't have an account?</span>
+          <button type="button" id="auth-toggle-btn" class="btn-link">Sign Up</button>
+        </p>
+
+        <p id="auth-error" class="error-message hidden"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- RECIPE LIST (HOME) SCREEN                                    -->
+  <!-- ============================================================ -->
+  <section id="screen-recipes" class="screen hidden">
+    <header class="screen-header">
+      <h2>My Recipes</h2>
+      <button type="button" id="header-add-recipe" class="btn-icon btn-icon-primary" aria-label="Add recipe">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="search" id="recipe-search" placeholder="Search recipes..." autocomplete="off">
+    </div>
+
+    <!-- Filter chips -->
+    <div class="filter-chips" id="filter-chips">
+      <div class="chip-group" data-filter="cuisine">
+        <button type="button" class="chip" data-value="italian">Italian</button>
+        <button type="button" class="chip" data-value="mexican">Mexican</button>
+        <button type="button" class="chip" data-value="thai">Thai</button>
+        <button type="button" class="chip" data-value="american">American</button>
+        <button type="button" class="chip" data-value="indian">Indian</button>
+        <button type="button" class="chip" data-value="japanese">Japanese</button>
+        <button type="button" class="chip" data-value="mediterranean">Mediterranean</button>
+        <button type="button" class="chip" data-value="chinese">Chinese</button>
+      </div>
+      <div class="chip-group" data-filter="meal_type">
+        <button type="button" class="chip" data-value="breakfast">Breakfast</button>
+        <button type="button" class="chip" data-value="lunch">Lunch</button>
+        <button type="button" class="chip" data-value="dinner">Dinner</button>
+        <button type="button" class="chip" data-value="snack">Snack</button>
+        <button type="button" class="chip" data-value="appetizer">Appetizer</button>
+        <button type="button" class="chip" data-value="side">Side</button>
+        <button type="button" class="chip" data-value="soup">Soup</button>
+        <button type="button" class="chip" data-value="salad">Salad</button>
+        <button type="button" class="chip" data-value="dessert">Dessert</button>
+      </div>
+      <div class="chip-group" data-filter="protein">
+        <button type="button" class="chip" data-value="chicken">Chicken</button>
+        <button type="button" class="chip" data-value="beef">Beef</button>
+        <button type="button" class="chip" data-value="pork">Pork</button>
+        <button type="button" class="chip" data-value="fish">Fish</button>
+        <button type="button" class="chip" data-value="shrimp">Shrimp</button>
+        <button type="button" class="chip" data-value="vegetarian">Vegetarian</button>
+        <button type="button" class="chip" data-value="vegan">Vegan</button>
+      </div>
+    </div>
+
+    <!-- Recipe grid -->
+    <div id="recipe-grid" class="recipe-grid">
+      <!-- Recipe cards rendered by app.js -->
+    </div>
+
+    <!-- Empty state -->
+    <div id="recipes-empty" class="empty-state hidden">
+      <p>No recipes yet. Tap + to add your first recipe.</p>
+    </div>
+
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- RECIPE DETAIL SCREEN                                         -->
+  <!-- ============================================================ -->
+  <section id="screen-recipe-detail" class="screen hidden">
+    <header class="screen-header">
+      <button type="button" id="detail-back-btn" class="btn-icon" aria-label="Back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <h2 id="detail-title">Recipe Title</h2>
+      <div class="header-actions">
+        <button type="button" id="detail-edit-btn" class="btn-icon" aria-label="Edit recipe">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+        <button type="button" id="detail-delete-btn" class="btn-icon btn-danger" aria-label="Delete recipe">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="detail-content">
+      <!-- Image -->
+      <div id="detail-image" class="detail-image">
+        <div class="image-placeholder"></div>
+      </div>
+
+      <!-- Description -->
+      <p id="detail-description" class="detail-description"></p>
+
+      <!-- Metadata row -->
+      <div class="detail-meta">
+        <div class="meta-item" id="detail-prep-time">
+          <span class="meta-label">Prep</span>
+          <span class="meta-value"></span>
+        </div>
+        <div class="meta-item" id="detail-cook-time">
+          <span class="meta-label">Cook</span>
+          <span class="meta-value"></span>
+        </div>
+        <div class="meta-item" id="detail-servings">
+          <span class="meta-label">Servings</span>
+          <span class="meta-value"></span>
+        </div>
+        <div class="meta-item" id="detail-difficulty">
+          <span class="meta-label">Difficulty</span>
+          <span class="meta-value"></span>
+        </div>
+        <div class="meta-item" id="detail-cost">
+          <span class="meta-label">Cost</span>
+          <span class="meta-value"></span>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div id="detail-tags" class="detail-tags"></div>
+
+      <!-- Source URL -->
+      <div id="detail-source" class="detail-source hidden">
+        <a id="detail-source-link" href="#" target="_blank" rel="noopener noreferrer">View Original Recipe</a>
+      </div>
+
+      <!-- Ingredients -->
+      <div class="detail-section">
+        <h3>Ingredients</h3>
+        <ul id="detail-ingredients" class="ingredient-list">
+          <!-- Populated by app.js -->
+        </ul>
+      </div>
+
+      <!-- Instructions -->
+      <div class="detail-section">
+        <h3>Instructions</h3>
+        <div id="detail-instructions" class="instructions-content">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div id="detail-notes-section" class="detail-section hidden">
+        <h3>Notes</h3>
+        <p id="detail-notes"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- ADD / EDIT RECIPE SCREEN                                     -->
+  <!-- ============================================================ -->
+  <section id="screen-recipe-form" class="screen hidden">
+    <header class="screen-header">
+      <button type="button" id="form-cancel-btn" class="btn-icon" aria-label="Cancel">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 id="form-title">Add Recipe</h2>
+      <button type="button" id="form-save-btn" class="btn btn-primary btn-sm">Save</button>
+    </header>
+
+    <form id="recipe-form" class="recipe-form" autocomplete="off">
+
+      <!-- URL Import -->
+      <div class="form-group">
+        <label for="form-source-url">Recipe URL</label>
+        <div class="input-with-action">
+          <input type="url" id="form-source-url" name="source_url" placeholder="https://...">
+          <button type="button" id="form-import-url-btn" class="btn btn-secondary btn-sm">Import from URL</button>
+        </div>
+        <p id="form-import-status" class="form-hint hidden"></p>
+      </div>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label for="form-recipe-title">Title <span class="required">*</span></label>
+        <input type="text" id="form-recipe-title" name="title" placeholder="Recipe name" required>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="form-description">Description</label>
+        <textarea id="form-description" name="description" rows="2" placeholder="Brief description..."></textarea>
+      </div>
+
+      <!-- Cuisine chips -->
+      <fieldset class="form-group">
+        <legend>Cuisine</legend>
+        <div class="chip-select" id="form-cuisine-chips">
+          <button type="button" class="chip" data-value="italian">Italian</button>
+          <button type="button" class="chip" data-value="mexican">Mexican</button>
+          <button type="button" class="chip" data-value="thai">Thai</button>
+          <button type="button" class="chip" data-value="american">American</button>
+          <button type="button" class="chip" data-value="indian">Indian</button>
+          <button type="button" class="chip" data-value="japanese">Japanese</button>
+          <button type="button" class="chip" data-value="mediterranean">Mediterranean</button>
+          <button type="button" class="chip" data-value="chinese">Chinese</button>
+          <button type="button" class="chip" data-value="french">French</button>
+          <button type="button" class="chip" data-value="korean">Korean</button>
+          <button type="button" class="chip" data-value="vietnamese">Vietnamese</button>
+          <button type="button" class="chip" data-value="greek">Greek</button>
+          <button type="button" class="chip" data-value="middle-eastern">Middle Eastern</button>
+          <button type="button" class="chip" data-value="cajun">Cajun</button>
+          <button type="button" class="chip" data-value="other">Other</button>
+        </div>
+      </fieldset>
+
+      <!-- Meal type chips -->
+      <fieldset class="form-group">
+        <legend>Meal Type</legend>
+        <div class="chip-select" id="form-meal-type-chips">
+          <button type="button" class="chip" data-value="breakfast">Breakfast</button>
+          <button type="button" class="chip" data-value="lunch">Lunch</button>
+          <button type="button" class="chip" data-value="dinner">Dinner</button>
+          <button type="button" class="chip" data-value="snack">Snack</button>
+          <button type="button" class="chip" data-value="appetizer">Appetizer</button>
+          <button type="button" class="chip" data-value="side">Side</button>
+          <button type="button" class="chip" data-value="dessert">Dessert</button>
+        </div>
+      </fieldset>
+
+      <!-- Protein chips -->
+      <fieldset class="form-group">
+        <legend>Protein</legend>
+        <div class="chip-select" id="form-protein-chips">
+          <button type="button" class="chip" data-value="chicken">Chicken</button>
+          <button type="button" class="chip" data-value="beef">Beef</button>
+          <button type="button" class="chip" data-value="pork">Pork</button>
+          <button type="button" class="chip" data-value="fish">Fish</button>
+          <button type="button" class="chip" data-value="shrimp">Shrimp</button>
+          <button type="button" class="chip" data-value="turkey">Turkey</button>
+          <button type="button" class="chip" data-value="lamb">Lamb</button>
+          <button type="button" class="chip" data-value="tofu">Tofu</button>
+          <button type="button" class="chip" data-value="vegetarian">Vegetarian</button>
+          <button type="button" class="chip" data-value="vegan">Vegan</button>
+        </div>
+      </fieldset>
+
+      <!-- Tags chips -->
+      <fieldset class="form-group">
+        <legend>Tags</legend>
+        <div class="chip-select" id="form-tag-chips">
+          <button type="button" class="chip" data-value="quick">Quick</button>
+          <button type="button" class="chip" data-value="kid-friendly">Kid-Friendly</button>
+          <button type="button" class="chip" data-value="date-night">Date Night</button>
+          <button type="button" class="chip" data-value="camping">Camping</button>
+          <button type="button" class="chip" data-value="fancy">Fancy</button>
+          <button type="button" class="chip" data-value="make-ahead">Make-Ahead</button>
+          <button type="button" class="chip" data-value="one-pot">One-Pot</button>
+          <button type="button" class="chip" data-value="grilling">Grilling</button>
+          <button type="button" class="chip" data-value="slow-cooker">Slow Cooker</button>
+          <button type="button" class="chip" data-value="instant-pot">Instant Pot</button>
+          <button type="button" class="chip" data-value="meal-prep">Meal Prep</button>
+        </div>
+        <div class="input-with-action" style="margin-top: 8px;">
+          <input type="text" id="form-custom-tag" placeholder="Add custom tag..." class="input-sm">
+          <button type="button" id="form-add-tag-btn" class="btn btn-secondary btn-sm">Add</button>
+        </div>
+      </fieldset>
+
+      <!-- Holidays chips -->
+      <fieldset class="form-group">
+        <legend>Holidays</legend>
+        <div class="chip-select" id="form-holiday-chips">
+          <button type="button" class="chip" data-value="thanksgiving">Thanksgiving</button>
+          <button type="button" class="chip" data-value="christmas">Christmas</button>
+          <button type="button" class="chip" data-value="easter">Easter</button>
+          <button type="button" class="chip" data-value="4th-of-july">4th of July</button>
+          <button type="button" class="chip" data-value="new-years">New Year's</button>
+          <button type="button" class="chip" data-value="halloween">Halloween</button>
+          <button type="button" class="chip" data-value="valentines">Valentine's</button>
+          <button type="button" class="chip" data-value="super-bowl">Super Bowl</button>
+        </div>
+      </fieldset>
+
+      <!-- Time and servings -->
+      <div class="form-row">
+        <div class="form-group form-group-small">
+          <label for="form-prep-time">Prep (min)</label>
+          <input type="number" id="form-prep-time" name="prep_time_min" min="0" placeholder="0">
+        </div>
+        <div class="form-group form-group-small">
+          <label for="form-cook-time">Cook (min)</label>
+          <input type="number" id="form-cook-time" name="cook_time_min" min="0" placeholder="0">
+        </div>
+        <div class="form-group form-group-small">
+          <label for="form-rest-time">Rest (min)</label>
+          <input type="number" id="form-rest-time" name="rest_time_min" min="0" placeholder="0">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group form-group-small">
+          <label for="form-servings">Servings</label>
+          <input type="number" id="form-servings" name="servings" min="1" placeholder="4">
+        </div>
+        <div class="form-group form-group-small">
+          <label for="form-difficulty">Difficulty</label>
+          <select id="form-difficulty" name="difficulty">
+            <option value="">--</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+        <div class="form-group form-group-small">
+          <label for="form-cost">Cost</label>
+          <select id="form-cost" name="estimated_cost">
+            <option value="">--</option>
+            <option value="$">$</option>
+            <option value="$$">$$</option>
+            <option value="$$$">$$$</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Visibility -->
+      <div class="form-group">
+        <label for="form-visibility">Visibility</label>
+        <select id="form-visibility" name="visibility">
+          <option value="private">Private</option>
+          <option value="shared">Shared</option>
+          <option value="public">Public</option>
+        </select>
+      </div>
+
+      <!-- Instructions -->
+      <div class="form-group">
+        <label for="form-instructions">Instructions</label>
+        <textarea id="form-instructions" name="instructions" rows="6" placeholder="Step-by-step instructions..."></textarea>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label for="form-notes">Notes</label>
+        <textarea id="form-notes" name="notes" rows="3" placeholder="Tips, substitutions, variations..."></textarea>
+      </div>
+
+      <!-- Ingredients (dynamic list) -->
+      <fieldset class="form-group">
+        <legend>Ingredients</legend>
+        <div id="ingredient-list" class="ingredient-form-list">
+          <!-- Ingredient rows rendered by app.js; template below for structure reference -->
+        </div>
+        <button type="button" id="add-ingredient-btn" class="btn btn-secondary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Ingredient
+        </button>
+      </fieldset>
+
+      <!-- Ingredient row template (hidden, cloned by app.js) -->
+      <template id="ingredient-row-template">
+        <div class="ingredient-row">
+          <div class="ingredient-row-main">
+            <input type="text" class="ingredient-name" name="ingredient_name" placeholder="Ingredient" required>
+            <input type="text" class="ingredient-qty" name="ingredient_qty" placeholder="Qty" inputmode="decimal">
+            <input type="text" class="ingredient-unit" name="ingredient_unit" placeholder="Unit">
+          </div>
+          <div class="ingredient-row-extra">
+            <select class="ingredient-section" name="ingredient_section">
+              <option value="">Store section</option>
+              <option value="produce">Produce</option>
+              <option value="dairy">Dairy</option>
+              <option value="meat">Meat</option>
+              <option value="pantry">Pantry</option>
+              <option value="frozen">Frozen</option>
+              <option value="bakery">Bakery</option>
+              <option value="beverages">Beverages</option>
+              <option value="spices">Spices</option>
+              <option value="deli">Deli</option>
+              <option value="other">Other</option>
+            </select>
+            <label class="ingredient-optional-label">
+              <input type="checkbox" class="ingredient-optional" name="ingredient_optional">
+              Optional
+            </label>
+            <input type="text" class="ingredient-notes" name="ingredient_notes" placeholder="Notes (diced, room temp...)">
+            <button type="button" class="btn-icon btn-remove-ingredient" aria-label="Remove ingredient">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </template>
+
+    </form>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- MEAL PLAN SCREEN (Phase 2 placeholder)                       -->
+  <!-- ============================================================ -->
+  <section id="screen-plan" class="screen hidden">
+    <header class="screen-header">
+      <h2>Meal Plan</h2>
+    </header>
+    <div class="placeholder-content">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <h3>Coming in Phase 2</h3>
+      <p>Weekly meal planning, smart suggestions, and aggregated shopping lists.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SETTINGS SCREEN                                              -->
+  <!-- ============================================================ -->
+  <section id="screen-settings" class="screen hidden">
+    <header class="screen-header">
+      <h2>Settings</h2>
+    </header>
+
+    <div class="settings-content">
+
+      <!-- Profile -->
+      <div class="settings-section">
+        <h3>Profile</h3>
+        <div class="form-group">
+          <label for="settings-email">Email</label>
+          <input type="email" id="settings-email" disabled>
+        </div>
+        <div class="form-group">
+          <label for="settings-display-name">Display Name</label>
+          <div class="input-with-action">
+            <input type="text" id="settings-display-name" placeholder="Your name">
+            <button type="button" id="settings-save-name-btn" class="btn btn-secondary btn-sm">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Food Exclusions -->
+      <div class="settings-section">
+        <h3>Food Exclusions</h3>
+        <p class="settings-hint">Ingredients you never want. Recipes containing these will show a warning.</p>
+        <div id="exclusion-list" class="tag-list">
+          <!-- Exclusion tags rendered by app.js -->
+        </div>
+        <div class="input-with-action">
+          <input type="text" id="settings-exclusion-input" placeholder="e.g., bell peppers">
+          <button type="button" id="settings-add-exclusion-btn" class="btn btn-secondary btn-sm">Add</button>
+        </div>
+      </div>
+
+      <!-- Family Members -->
+      <div class="settings-section">
+        <h3>Family Members</h3>
+        <p class="settings-hint">Used for family ratings. Add each person who eats together.</p>
+        <div id="family-member-list" class="tag-list">
+          <!-- Family member tags rendered by app.js -->
+        </div>
+        <div class="input-with-action">
+          <input type="text" id="settings-family-input" placeholder="e.g., Jesse">
+          <button type="button" id="settings-add-family-btn" class="btn btn-secondary btn-sm">Add</button>
+        </div>
+      </div>
+
+      <!-- Invite Friends -->
+      <div class="settings-section">
+        <h3>Invite Friends</h3>
+        <div class="input-with-action">
+          <input type="email" id="settings-invite-email" placeholder="friend@example.com">
+          <button type="button" id="settings-invite-btn" class="btn btn-secondary btn-sm">Invite</button>
+        </div>
+        <p id="settings-invite-status" class="form-hint hidden"></p>
+      </div>
+
+      <!-- Sign Out -->
+      <div class="settings-section">
+        <button type="button" id="settings-signout-btn" class="btn btn-danger">Sign Out</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM TAB BAR                                               -->
+  <!-- ============================================================ -->
+  <nav id="tab-bar" class="tab-bar hidden">
+    <button type="button" class="tab-btn active" data-screen="screen-recipes" aria-label="Recipes">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>Recipes</span>
+    </button>
+    <button type="button" class="tab-btn" data-screen="screen-plan" aria-label="Plan">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+      <span>Plan</span>
+    </button>
+    <button type="button" class="tab-btn" data-screen="screen-settings" aria-label="Settings">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- SCRIPTS                                                      -->
+  <!-- ============================================================ -->
+  <script>
+    window.onerror = function(msg, src, line) {
+      document.title = 'ERROR: ' + msg;
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;top:40px;left:0;right:0;background:red;color:white;padding:16px;z-index:99999;font-size:14px;word-break:break-all';
+      d.textContent = msg + ' (line ' + line + ' in ' + src + ')';
+      document.body.appendChild(d);
+    };
+  </script>
+  <script src="js/supabase.min.js"></script>
+  <script>document.title = window.supabase ? 'SB:OK' : 'SB:MISSING';</script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

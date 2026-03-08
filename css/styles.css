@@ -1,0 +1,1640 @@
+/* ==========================================================================
+   Cesa's Table — Meal Planning & Recipe Management PWA
+   Mobile-first, warm kitchen-friendly design
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Design Tokens)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Colors */
+  --color-primary: #E07A5F;
+  --color-primary-light: #e8967f;
+  --color-primary-dark: #c4684f;
+  --color-secondary: #81B29A;
+  --color-secondary-light: #9dc4b0;
+  --color-secondary-dark: #6a9a82;
+  --color-background: #F4F1DE;
+  --color-background-card: #FFFFFF;
+  --color-text: #3D405B;
+  --color-text-muted: #7a7c8e;
+  --color-text-light: #9b9dab;
+  --color-accent: #F2CC8F;
+  --color-accent-dark: #e0b76d;
+  --color-error: #D64545;
+  --color-error-light: #fdecea;
+  --color-success: #81B29A;
+  --color-success-light: #e8f5ee;
+  --color-border: #e0dcc8;
+  --color-overlay: rgba(61, 64, 91, 0.5);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Font Sizes */
+  --font-xs: 0.75rem;    /* 12px */
+  --font-sm: 0.8125rem;  /* 13px */
+  --font-base: 0.9375rem; /* 15px — slightly larger for kitchen readability */
+  --font-md: 1rem;       /* 16px */
+  --font-lg: 1.25rem;    /* 20px */
+  --font-xl: 1.5rem;     /* 24px */
+  --font-2xl: 2rem;      /* 32px */
+
+  /* Font Weights */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(61, 64, 91, 0.08);
+  --shadow-md: 0 4px 12px rgba(61, 64, 91, 0.1);
+  --shadow-lg: 0 8px 24px rgba(61, 64, 91, 0.12);
+  --shadow-xl: 0 12px 36px rgba(61, 64, 91, 0.16);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Layout */
+  --tab-bar-height: 56px;
+  --header-height: 56px;
+  --fab-size: 56px;
+  --fab-bottom-offset: 80px; /* tab bar + spacing */
+  --max-content-width: 480px;
+  --page-padding: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   Global Reset & Base Styles
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--font-base);
+  font-weight: var(--weight-normal);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* iOS safe areas — notch and home indicator */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: var(--font-md); /* 16px minimum prevents iOS zoom on focus */
+}
+
+/* --------------------------------------------------------------------------
+   Utility Classes
+   -------------------------------------------------------------------------- */
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Screen Management
+   -------------------------------------------------------------------------- */
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: 16px var(--page-padding) calc(var(--tab-bar-height) + 24px);
+}
+
+/* Main content wrapper — accounts for tab bar */
+.app-content {
+  padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-md));
+}
+
+/* --------------------------------------------------------------------------
+   Login Screen
+   -------------------------------------------------------------------------- */
+#screen-login {
+  min-height: 100vh;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg) !important;
+  max-width: none !important;
+  background: linear-gradient(
+    160deg,
+    var(--color-background) 0%,
+    #f0ecce 50%,
+    var(--color-accent) 100%
+  );
+}
+
+#screen-login.active {
+  display: flex;
+}
+
+.login-container {
+  background: var(--color-background-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.login-logo h1 {
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.login-tagline {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-xl);
+}
+
+/* Hide form labels on login screen — placeholders are sufficient */
+#auth-form > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+#auth-form input {
+  margin-bottom: var(--space-sm);
+}
+
+#auth-form #auth-submit-btn {
+  margin-top: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.login-card .login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.login-card .login-form .form-group {
+  text-align: left;
+}
+
+.login-card .login-error {
+  color: var(--color-error);
+  font-size: var(--font-sm);
+  min-height: 1.25em;
+  margin-top: var(--space-xs);
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Tab Bar
+   -------------------------------------------------------------------------- */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+  background: var(--color-background-card);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: var(--space-sm);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 100;
+  box-shadow: 0 -2px 8px rgba(61, 64, 91, 0.06);
+}
+
+.tab-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  padding: var(--space-xs) 0;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-bar-item .tab-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.tab-bar-item .tab-label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+}
+
+.tab-bar-item.active {
+  color: var(--color-primary);
+}
+
+.tab-bar-item:active {
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Header / Top Bar
+   -------------------------------------------------------------------------- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  padding: 0 var(--space-md);
+  background: var(--color-background-card);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header h1 {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+}
+
+.header-action {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-circle);
+  color: var(--color-text);
+  transition: background var(--transition-fast);
+}
+
+.header-action:active {
+  background: var(--color-border);
+}
+
+/* --------------------------------------------------------------------------
+   Screen Header
+   -------------------------------------------------------------------------- */
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.screen-header h2 {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.screen-header .header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Search Bar
+   -------------------------------------------------------------------------- */
+.search-bar {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.search-bar input {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--space-md) 0 44px;
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  font-size: var(--font-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
+}
+
+.search-bar input::placeholder {
+  color: var(--color-text-light);
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  left: calc(var(--space-md) + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-light);
+  font-size: 1.1rem;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Filter Chips
+   -------------------------------------------------------------------------- */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.chip-group + .chip-group {
+  margin-top: 12px;
+}
+
+.filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: var(--color-background-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.chip-sm {
+  padding: 3px 8px;
+  font-size: var(--font-xs);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.chip.removable .chip-remove {
+  margin-left: var(--space-xs);
+  font-size: var(--font-xs);
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
+   Recipe Card Grid
+   -------------------------------------------------------------------------- */
+.recipe-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  background: var(--color-background-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.recipe-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-md);
+}
+
+.card-image {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-image .image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary-light) 100%);
+}
+
+.card-body {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  min-width: 0;
+}
+
+.card-title {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Recipe Detail
+   -------------------------------------------------------------------------- */
+.detail-image {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.detail-image .image-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary-light) 100%);
+}
+
+.detail-image img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.detail-description {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.meta-label {
+  font-size: var(--font-xs);
+  color: var(--color-text);
+}
+
+.meta-value {
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-sm);
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--space-md);
+}
+
+.detail-source {
+  margin-bottom: var(--space-md);
+}
+
+.detail-section {
+  margin-bottom: var(--space-xl);
+}
+
+.detail-section h3 {
+  font-size: var(--font-md);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--color-primary);
+  display: inline-block;
+}
+
+.instructions-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recipe-detail-back {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  font-size: 1.2rem;
+  z-index: 10;
+}
+
+.recipe-detail-actions {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  gap: var(--space-sm);
+  z-index: 10;
+}
+
+.recipe-detail-actions button {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  font-size: 1.1rem;
+}
+
+.recipe-detail-content {
+  padding: var(--space-lg) var(--space-md);
+}
+
+.recipe-detail-content h1 {
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  line-height: 1.25;
+  margin-bottom: var(--space-sm);
+}
+
+.recipe-detail-content .recipe-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.recipe-detail-content .recipe-meta-row span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.recipe-detail-content .recipe-description {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+.recipe-section {
+  margin-bottom: var(--space-xl);
+}
+
+.recipe-section h2 {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--color-primary);
+  display: inline-block;
+}
+
+/* Ingredient list — checkable items */
+.ingredient-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ingredient-item .ingredient-checkbox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  transition: all var(--transition-fast);
+  color: transparent;
+}
+
+.ingredient-item.checked .ingredient-checkbox {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: #FFFFFF;
+}
+
+.ingredient-item.checked .ingredient-text {
+  text-decoration: line-through;
+  color: var(--color-text-light);
+}
+
+.ingredient-item .ingredient-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.ingredient-text .ingredient-amount {
+  font-weight: var(--weight-semibold);
+}
+
+/* Instruction steps */
+.instruction-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.instruction-step {
+  display: flex;
+  gap: var(--space-md);
+  margin-left: -40px;
+}
+
+.instruction-step .step-number {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-bold);
+  margin-top: 2px;
+}
+
+.instruction-step .step-text {
+  flex: 1;
+  line-height: 1.7;
+}
+
+/* --------------------------------------------------------------------------
+   Add / Edit Recipe Form
+   -------------------------------------------------------------------------- */
+.recipe-form {
+  padding: var(--space-md);
+  padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-xl));
+}
+
+.form-section {
+  margin-bottom: var(--space-xl);
+}
+
+.form-section-title {
+  font-size: var(--font-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.form-group .form-hint {
+  font-size: var(--font-xs);
+  color: var(--color-text-light);
+  margin-top: var(--space-xs);
+}
+
+/* Chip selector for multi-select fields (cuisine, meal_type, etc.) */
+.chip-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.chip-selector .chip {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Dynamic ingredient rows */
+.ingredient-row {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.ingredient-row .input-amount {
+  width: 80px;
+  min-width: 80px;
+}
+
+.ingredient-row .input-unit {
+  width: 72px;
+  min-width: 72px;
+}
+
+.ingredient-row .input-name {
+  flex: 1;
+}
+
+.ingredient-row .remove-row {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-error);
+  border-radius: var(--radius-circle);
+  transition: background var(--transition-fast);
+}
+
+.ingredient-row .remove-row:active {
+  background: var(--color-error-light);
+}
+
+.add-row-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-primary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-pill);
+  border: 1.5px dashed var(--color-primary);
+  transition: background var(--transition-fast);
+}
+
+.add-row-btn:active {
+  background: rgba(224, 122, 95, 0.08);
+}
+
+/* Instruction rows */
+.instruction-row {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  margin-bottom: var(--space-sm);
+}
+
+.instruction-row .step-label {
+  width: 28px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-muted);
+}
+
+.instruction-row textarea {
+  flex: 1;
+  min-height: 60px;
+  resize: vertical;
+}
+
+.instruction-row .remove-row {
+  margin-top: var(--space-xs);
+}
+
+/* --------------------------------------------------------------------------
+   Form Inputs (shared)
+   -------------------------------------------------------------------------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--space-md);
+  background: var(--color-background-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+textarea {
+  height: auto;
+  min-height: 80px;
+  padding: var(--space-sm) var(--space-md);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7c8e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.15);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: var(--color-background);
+  color: var(--color-text-light);
+  cursor: not-allowed;
+}
+
+.form-error-message {
+  font-size: var(--font-xs);
+  color: var(--color-error);
+  margin-top: var(--space-xs);
+}
+
+input.error,
+textarea.error,
+select.error {
+  border-color: var(--color-error);
+}
+
+input.error:focus,
+textarea.error:focus,
+select.error:focus {
+  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  height: 44px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  transition: all var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.btn-primary:active {
+  background: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+
+.btn-secondary:active {
+  background: rgba(224, 122, 95, 0.08);
+}
+
+.btn-danger {
+  background: var(--color-error);
+  color: #FFFFFF;
+}
+
+.btn-danger:active {
+  background: #c13030;
+}
+
+.btn-text {
+  background: transparent;
+  color: var(--color-primary);
+  padding: 0 var(--space-md);
+}
+
+.btn-text:active {
+  opacity: 0.7;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-sm {
+  height: 36px;
+  padding: 0 var(--space-md);
+  font-size: var(--font-sm);
+}
+
+.btn-lg {
+  height: 52px;
+  padding: 0 var(--space-xl);
+  font-size: var(--font-md);
+  border-radius: var(--radius-lg);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-circle);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.btn-icon:active {
+  background: var(--color-border);
+}
+
+.btn-icon.btn-danger {
+  color: var(--color-error);
+}
+
+.btn-icon-primary {
+  background: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  width: 36px;
+  height: 36px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+}
+
+.btn-link:active {
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Floating Action Button (FAB)
+   -------------------------------------------------------------------------- */
+.fab {
+  position: fixed;
+  bottom: calc(var(--fab-bottom-offset) + env(safe-area-inset-bottom));
+  right: var(--space-md);
+  width: var(--fab-size);
+  height: var(--fab-size);
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: var(--radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  box-shadow: var(--shadow-lg);
+  z-index: 90;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:active {
+  transform: scale(0.92);
+  box-shadow: var(--shadow-md);
+}
+
+/* --------------------------------------------------------------------------
+   Settings Screen
+   -------------------------------------------------------------------------- */
+.settings-content {
+  /* padding handled by .screen.active */
+}
+
+.settings-hint {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.settings-section {
+  margin-bottom: var(--space-xl);
+}
+
+.settings-section-title {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+  padding-left: var(--space-md);
+}
+
+.settings-group {
+  background: var(--color-background-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  min-height: 48px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings-item:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.settings-item:active {
+  background: var(--color-background);
+}
+
+.settings-item-label {
+  font-size: var(--font-base);
+  color: var(--color-text);
+}
+
+.settings-item-value {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.settings-item-danger .settings-item-label {
+  color: var(--color-error);
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+
+.toggle.active {
+  background: var(--color-secondary);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: #FFFFFF;
+  border-radius: var(--radius-circle);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-fast);
+}
+
+.toggle.active::after {
+  transform: translateX(20px);
+}
+
+/* --------------------------------------------------------------------------
+   Loading & Empty States
+   -------------------------------------------------------------------------- */
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+}
+
+.loading-state .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-circle);
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--space-md);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p,
+.empty-state p {
+  color: var(--color-text-muted);
+  font-size: var(--font-base);
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.4;
+}
+
+.empty-state .empty-title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-state .empty-description {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-lg);
+  max-width: 280px;
+}
+
+/* --------------------------------------------------------------------------
+   Toast / Notification
+   -------------------------------------------------------------------------- */
+.toast-container {
+  position: fixed;
+  top: calc(var(--space-md) + env(safe-area-inset-top));
+  left: var(--space-md);
+  right: var(--space-md);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--color-text);
+  color: #FFFFFF;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: all var(--transition-base);
+  pointer-events: auto;
+}
+
+.toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast.toast-success {
+  background: var(--color-secondary-dark);
+}
+
+.toast.toast-error {
+  background: var(--color-error);
+}
+
+.toast.toast-warning {
+  background: var(--color-accent-dark);
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   Modal / Dialog Overlay
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--color-background-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--shadow-xl);
+  transform: scale(0.95);
+  transition: transform var(--transition-base);
+  text-align: center;
+}
+
+.modal-overlay.visible .modal {
+  transform: scale(1);
+}
+
+.modal h2 {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-sm);
+}
+
+.modal p {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-lg);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Utility Classes
+   -------------------------------------------------------------------------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-muted); }
+.text-error { color: var(--color-error); }
+.text-success { color: var(--color-success); }
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+
+/* --------------------------------------------------------------------------
+   Additional Component Styles (matching HTML)
+   -------------------------------------------------------------------------- */
+
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-sm);
+  margin-top: 8px;
+}
+
+.auth-toggle {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin-top: 8px;
+}
+
+.input-with-action {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-with-action input {
+  flex: 1;
+}
+
+.form-hint {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--color-primary-light);
+  color: white;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.1em;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  color: var(--color-text-muted);
+}
+
+.placeholder-content h3 {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+  color: var(--color-text);
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-xs);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn.active {
+  color: var(--color-primary);
+}
+
+.tab-btn:active {
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive — Tablet (768px+)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .recipe-grid {
+    gap: var(--space-md);
+  }
+
+  .recipe-card-title {
+    font-size: var(--font-md);
+  }
+
+  .recipe-detail-content {
+    padding: var(--space-xl) var(--space-lg);
+  }
+
+  .recipe-detail-content h1 {
+    font-size: var(--font-2xl);
+  }
+
+  .login-card {
+    padding: var(--space-2xl);
+  }
+
+  .recipe-form {
+    padding: var(--space-lg);
+  }
+
+  .search-bar {
+    max-width: 480px;
+  }
+
+  .modal {
+    max-width: 420px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive — Desktop (1024px+)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .app-container {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+  }
+
+  .recipe-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .recipe-detail-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .recipe-detail-image {
+    aspect-ratio: 16 / 7;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+
+  .recipe-form {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .tab-bar {
+    max-width: var(--max-content-width);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+
+  .fab {
+    right: calc(50% - var(--max-content-width) / 2 + var(--space-lg));
+  }
+}
