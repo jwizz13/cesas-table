@@ -405,6 +405,10 @@ function showRecipeForm(recipeId) {
   // Clear ingredient list
   $('#ingredient-list').innerHTML = '';
 
+  // Clear prep time estimation hint
+  const prepHint = $('#form-prep-time-hint');
+  if (prepHint) prepHint.classList.add('hidden');
+
   if (editingRecipeId) {
     $('#form-title').textContent = 'Edit Recipe';
     populateFormForEdit(editingRecipeId);
@@ -869,35 +873,102 @@ function extractSchemaOrg(html) {
 }
 
 function parseSchemaRecipe(schema) {
+  let prepTime = parseDuration(schema.prepTime);
+  let cookTime = parseDuration(schema.cookTime);
+  const totalTime = parseDuration(schema.totalTime);
+
+  // If we have totalTime but missing one of prep/cook, infer the missing one
+  if (totalTime && prepTime && !cookTime) {
+    cookTime = Math.max(totalTime - prepTime, 0) || null;
+  } else if (totalTime && cookTime && !prepTime) {
+    prepTime = Math.max(totalTime - cookTime, 0) || null;
+  } else if (totalTime && !prepTime && !cookTime) {
+    // Only totalTime available — treat it all as cook time (conservative default)
+    cookTime = totalTime;
+  }
+
+  // Handle image — can be string, object with url, or array
+  let imageUrl = null;
+  if (typeof schema.image === 'string') {
+    imageUrl = schema.image;
+  } else if (Array.isArray(schema.image)) {
+    // Array of strings or objects
+    const first = schema.image[0];
+    imageUrl = typeof first === 'string' ? first : first?.url || null;
+  } else if (schema.image?.url) {
+    imageUrl = schema.image.url;
+  }
+
+  const ingredients = parseIngredients(schema.recipeIngredient);
+
+  // Estimate prep time if we have cook time but no prep time
+  let prepTimeEstimated = false;
+  if (!prepTime && cookTime && ingredients.length > 0) {
+    prepTime = estimatePrepTime(ingredients.length);
+    prepTimeEstimated = true;
+    console.log(`${LOG} No prepTime in schema — estimated ~${prepTime}m based on ${ingredients.length} ingredients`);
+  }
+
   return {
     title: schema.name || '',
     description: schema.description || '',
-    image_url: typeof schema.image === 'string' ? schema.image : schema.image?.url || (Array.isArray(schema.image) ? schema.image[0] : null),
-    prep_time_min: parseDuration(schema.prepTime),
-    cook_time_min: parseDuration(schema.cookTime),
-    servings: parseInt(schema.recipeYield) || null,
+    image_url: imageUrl,
+    prep_time_min: prepTime,
+    cook_time_min: cookTime,
+    prep_time_estimated: prepTimeEstimated,
+    servings: parseServings(schema.recipeYield),
     instructions: parseInstructions(schema.recipeInstructions),
-    ingredients: parseIngredients(schema.recipeIngredient),
+    ingredients,
     cuisine: schema.recipeCuisine ? (Array.isArray(schema.recipeCuisine) ? schema.recipeCuisine : [schema.recipeCuisine]) : [],
     category: schema.recipeCategory ? (Array.isArray(schema.recipeCategory) ? schema.recipeCategory : [schema.recipeCategory]) : []
   };
 }
 
+// Estimate prep time based on ingredient count when the recipe doesn't provide it
+// Base 5 min + 2 min per ingredient, capped at 60 min
+function estimatePrepTime(ingredientCount) {
+  return Math.min(5 + (ingredientCount * 2), 60);
+}
+
+// Parse recipeYield which can be a number, string ("4 servings"), or array (["4 servings"])
+function parseServings(yield_) {
+  if (!yield_) return null;
+  const raw = Array.isArray(yield_) ? yield_[0] : yield_;
+  const num = parseInt(String(raw).match(/\d+/)?.[0]);
+  return isNaN(num) ? null : num;
+}
+
 function parseDuration(iso) {
   if (!iso) return null;
-  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  // Handle ISO 8601 durations: PT30M, PT1H15M, PT2H, PT30S, PT1H30M15S
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return null;
-  return (parseInt(match[1] || 0) * 60) + parseInt(match[2] || 0);
+  const hours = parseInt(match[1] || 0);
+  const minutes = parseInt(match[2] || 0);
+  const seconds = parseInt(match[3] || 0);
+  // Round seconds up to nearest minute (30S = 1 min)
+  const totalMinutes = (hours * 60) + minutes + (seconds > 0 ? Math.ceil(seconds / 60) : 0);
+  return totalMinutes || null; // return null if 0 (avoids saving 0 as a valid time)
 }
 
 function parseInstructions(instructions) {
   if (!instructions) return '';
   if (typeof instructions === 'string') return instructions;
   if (Array.isArray(instructions)) {
-    return instructions.map(step => {
-      if (typeof step === 'string') return step;
-      return step.text || step.name || '';
-    }).filter(Boolean).join('\n');
+    const steps = [];
+    for (const step of instructions) {
+      if (typeof step === 'string') {
+        steps.push(step);
+      } else if (step['@type'] === 'HowToSection' && Array.isArray(step.itemListElement)) {
+        // Some sites group instructions into sections (e.g., "For the sauce:", "For the pasta:")
+        for (const subStep of step.itemListElement) {
+          steps.push(typeof subStep === 'string' ? subStep : subStep.text || subStep.name || '');
+        }
+      } else {
+        steps.push(step.text || step.name || '');
+      }
+    }
+    return steps.filter(Boolean).join('\n');
   }
   return '';
 }
@@ -937,15 +1008,20 @@ function parseIngredientString(str) {
   const unitRegex = new RegExp(`^(${unitPatterns.join('|')})\\b\\s*`, 'i');
 
   // Match quantity at the start: whole numbers, decimals, fractions, mixed numbers
-  // Handles: "2", "1.5", "1/2", "1 1/2", "½"
+  // Handles: "2", "1.5", "1/2", "1 1/2", "½", "1½" (number + unicode fraction without space)
   const unicodeFractions = { '\u00BC': 0.25, '\u00BD': 0.5, '\u00BE': 0.75, '\u2153': 1/3, '\u2154': 2/3, '\u215B': 0.125, '\u215C': 0.375, '\u215D': 0.625, '\u215E': 0.875 };
-  const qtyMatch = text.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+\.?\d*|[¼½¾⅓⅔⅛⅜⅝⅞])\s*/);
+  const qtyMatch = text.match(/^(\d+[¼½¾⅓⅔⅛⅜⅝⅞]|\d+\s+\d+\/\d+|\d+\/\d+|\d+\.?\d*|[¼½¾⅓⅔⅛⅜⅝⅞])\s*/);
 
   if (qtyMatch) {
     const qtyStr = qtyMatch[1].trim();
     // Parse the quantity
     if (unicodeFractions[qtyStr]) {
       result.quantity = unicodeFractions[qtyStr];
+    } else if (/^\d+[¼½¾⅓⅔⅛⅜⅝⅞]$/.test(qtyStr)) {
+      // "1½" — whole number + unicode fraction without space
+      const whole = parseInt(qtyStr);
+      const frac = unicodeFractions[qtyStr.slice(-1)] || 0;
+      result.quantity = whole + frac;
     } else if (qtyStr.includes('/')) {
       // Handle "1 1/2" or "1/2"
       const parts = qtyStr.split(/\s+/);
@@ -1013,6 +1089,15 @@ function populateFormFromImport(recipe) {
   if (recipe.cook_time_min) $('#form-cook-time').value = recipe.cook_time_min;
   if (recipe.servings) $('#form-servings').value = recipe.servings;
   if (recipe.instructions) $('#form-instructions').value = recipe.instructions;
+
+  // Show hint if prep time was estimated
+  if (recipe.prep_time_estimated) {
+    const hint = $('#form-prep-time-hint');
+    if (hint) {
+      hint.textContent = `~${recipe.prep_time_min}m estimated from ${recipe.ingredients?.length || 0} ingredients`;
+      hint.classList.remove('hidden');
+    }
+  }
 
   // Set cuisine chips if they match
   if (recipe.cuisine?.length) setChips('#form-cuisine-chips', recipe.cuisine.map(c => c.toLowerCase()));

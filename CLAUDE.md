@@ -853,7 +853,7 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 
 ## Tech Debt & Known Issues
 - ~~Dead CSS rules~~ — cleaned up
-- SW cache version is at v30 — consider resetting to v1 after stabilizing
+- SW cache version is at v47
 - `allorigins.win` CORS proxy used for URL import — fragile, should be replaced with Supabase Edge Function
 - `data.js` constants not used to render HTML chips (chips are hardcoded in HTML) — could DRY up by generating chips from data.js in JS
 
@@ -861,6 +861,7 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-03-08 | 0.1.4 | Fixed prep/cook time extraction from URL imports: improved ISO 8601 duration parser (seconds support), totalTime fallback, prep time estimation from ingredient count, HowToSection instruction parsing, recipeYield array handling, unicode fraction edge case (1½). SW cache v47. |
 | 2026-03-08 | 0.1.3 | Responsive layout fixes, tags below title, image_url saved from imports. Added CSS editing rules + canonical reference to prevent regressions. |
 | 2026-03-07 | 0.1.1 | Code quality: removed ~280 lines dead CSS, added ingredient string parser for URL imports, save button loading state, instruction step styling fix, data.js sync. |
 | 2026-03-07 | 0.1.0 | Phase 1 MVP deployed. Auth, recipe CRUD, search/filter, URL import, settings. Live on GitHub Pages. |
