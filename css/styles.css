@@ -279,12 +279,11 @@ input, textarea, select {
   }
   #screen-recipe-detail .screen-header {
     position: relative;
-    align-items: flex-start;
   }
   #screen-recipe-detail .screen-header #detail-back-btn {
     position: absolute;
     left: -48px;
-    top: -5px;
+    top: 0;
     width: 40px;
     margin: 0;
   }
