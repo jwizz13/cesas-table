@@ -811,10 +811,10 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 #screen-recipe-detail .screen-header { flex-wrap: wrap; }
 #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: 100%; width: 40px; margin-bottom: var(--space-xs); }
 
-/* --- Desktop (768px+): back arrow inline left of title --- */
+/* --- Desktop (768px+): extra left padding creates gutter, arrow hangs into it --- */
 @media (min-width: 768px) {
-  #screen-recipe-detail .screen-header { flex-wrap: nowrap; }
-  #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: auto; width: 40px; margin-bottom: 0; margin-right: var(--space-sm); }
+  #screen-recipe-detail.active { padding-left: calc(var(--page-padding) + 48px); }
+  #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: auto; width: 40px; margin-left: -48px; margin-bottom: 0; margin-right: var(--space-sm); }
 }
 
 /* --- Tags: below title, left-aligned, both views --- */
@@ -831,9 +831,9 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 .instruction-step { display: flex; flex-direction: column; gap: var(--space-xs); }
 .instruction-step .step-number { font-size: var(--font-sm); font-weight: var(--weight-bold); color: var(--color-primary); }
 
-/* --- Desktop (768px+): number circles inline with text --- */
+/* --- Desktop (768px+): number circles hang left of text --- */
 @media (min-width: 768px) {
-  .instruction-step { flex-direction: row; gap: var(--space-md); }
+  .instruction-step { flex-direction: row; gap: var(--space-md); margin-left: -40px; }
   .instruction-step .step-number { width: 24px; height: 24px; min-width: 24px; background: var(--color-primary); color: #FFFFFF; border-radius: var(--radius-circle); display: flex; align-items: center; justify-content: center; font-size: var(--font-xs); margin-top: 2px; }
 }
 
