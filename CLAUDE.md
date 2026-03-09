@@ -789,6 +789,59 @@ Two growth loops:
 
 ---
 
+## CSS Editing Rules (NON-NEGOTIABLE)
+
+Repeated CSS regressions have caused layout breakage. Follow these rules for EVERY CSS edit:
+
+1. **Surgical edits only.** Change the MINIMUM lines necessary. Never replace a 20-line block to change 1 line. If you need to change `margin-left: -40px` to `margin-left: 0`, edit ONLY that line.
+2. **Read the surrounding CSS before AND after every edit.** Verify you didn't delete media queries, comments, or adjacent rules.
+3. **Never remove a `@media` query unless explicitly asked.** Desktop/mobile responsive rules are paired — removing one breaks a view.
+4. **One concern per edit.** If asked to change tags AND the back arrow, make two separate Edit calls, not one big replacement.
+5. **Verify against the reference below** after editing. If a rule from the reference is missing, you broke something.
+
+### Recipe Detail Header — CSS Reference (canonical)
+
+These rules control the recipe detail header layout. Do NOT remove or alter them unless specifically asked:
+
+```css
+/* --- Base header (all screens) --- */
+.screen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+
+/* --- Mobile: back arrow on its own row above title --- */
+#screen-recipe-detail .screen-header { flex-wrap: wrap; }
+#screen-recipe-detail .screen-header #detail-back-btn { flex-basis: 100%; width: 40px; margin-bottom: var(--space-xs); }
+
+/* --- Desktop (768px+): back arrow inline left of title --- */
+@media (min-width: 768px) {
+  #screen-recipe-detail .screen-header { flex-wrap: nowrap; }
+  #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: auto; width: 40px; margin-bottom: 0; margin-right: var(--space-sm); }
+}
+
+/* --- Tags: below title, left-aligned, both views --- */
+.detail-header-tags { display: flex; flex-wrap: wrap; gap: 4px; flex-basis: 100%; justify-content: flex-start; margin-top: var(--space-sm); }
+
+/* --- Header action buttons (edit/delete) --- */
+.screen-header .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+```
+
+### Instruction Steps — CSS Reference (canonical)
+
+```css
+/* --- Mobile: stacked (number above text) --- */
+.instruction-step { display: flex; flex-direction: column; gap: var(--space-xs); }
+.instruction-step .step-number { font-size: var(--font-sm); font-weight: var(--weight-bold); color: var(--color-primary); }
+
+/* --- Desktop (768px+): number circles inline with text --- */
+@media (min-width: 768px) {
+  .instruction-step { flex-direction: row; gap: var(--space-md); }
+  .instruction-step .step-number { width: 24px; height: 24px; min-width: 24px; background: var(--color-primary); color: #FFFFFF; border-radius: var(--radius-circle); display: flex; align-items: center; justify-content: center; font-size: var(--font-xs); margin-top: 2px; }
+}
+
+.instruction-step .step-text { flex: 1; line-height: 1.7; }
+```
+
+---
+
 ## Don't Waste Time On
 - **Safari localhost testing** — Safari's HTTPS-Only mode blocks localhost HTTP. Use Chrome for local dev, or test on the live GitHub Pages URL.
 - **Supabase CDN short URL** — Must use full UMD path `@supabase/supabase-js@2/dist/umd/supabase.min.js`. We downloaded it locally as `js/supabase.min.js` instead.
@@ -805,6 +858,7 @@ Two growth loops:
 
 | Date | Version | Changes |
 |------|---------|---------|
+| 2026-03-08 | 0.1.3 | Responsive layout fixes, tags below title, image_url saved from imports. Added CSS editing rules + canonical reference to prevent regressions. |
 | 2026-03-07 | 0.1.1 | Code quality: removed ~280 lines dead CSS, added ingredient string parser for URL imports, save button loading state, instruction step styling fix, data.js sync. |
 | 2026-03-07 | 0.1.0 | Phase 1 MVP deployed. Auth, recipe CRUD, search/filter, URL import, settings. Live on GitHub Pages. |
 | 2026-03-07 | 0.0.0 | Project plan created. CLAUDE.md written. |

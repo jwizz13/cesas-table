@@ -261,18 +261,28 @@ input, textarea, select {
   margin-bottom: 20px;
 }
 
+/* Mobile: back arrow on its own row above title */
 #screen-recipe-detail .screen-header {
   flex-wrap: wrap;
 }
 
-/* Mobile: arrow inline left with title, tags below left-aligned */
 #screen-recipe-detail .screen-header #detail-back-btn {
+  flex-basis: 100%;
   width: 40px;
-  margin-right: var(--space-xs);
+  margin-bottom: var(--space-xs);
 }
 
-#screen-recipe-detail .screen-header h2 {
-  flex: 1;
+/* Desktop: back arrow inline with title */
+@media (min-width: 768px) {
+  #screen-recipe-detail .screen-header {
+    flex-wrap: nowrap;
+  }
+  #screen-recipe-detail .screen-header #detail-back-btn {
+    flex-basis: auto;
+    width: 40px;
+    margin-bottom: 0;
+    margin-right: var(--space-sm);
+  }
 }
 
 .screen-header h2 {
@@ -281,6 +291,7 @@ input, textarea, select {
   color: var(--color-text);
 }
 
+/* Tags below title, left-aligned, on both mobile and desktop */
 .detail-header-tags {
   display: flex;
   flex-wrap: wrap;
