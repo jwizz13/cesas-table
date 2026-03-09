@@ -256,7 +256,7 @@ function renderRecipeGrid() {
     <div class="recipe-card" data-id="${recipe.id}">
       <div class="card-image">
         ${recipe.image_url
-          ? `<img src="${escapeHtml(recipe.image_url)}" alt="${escapeHtml(recipe.title)}" loading="lazy">`
+          ? `<img src="${escapeHtml(recipe.image_url)}" alt="${escapeHtml(recipe.title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="image-placeholder" style="display:none"></div>`
           : `<div class="image-placeholder"></div>`
         }
       </div>
@@ -309,10 +309,10 @@ async function showRecipeDetail(recipeId) {
   $('#detail-description').textContent = recipe.description || '';
   $('#detail-description').classList.toggle('hidden', !recipe.description);
 
-  // Image
+  // Image — show recipe image if available, fall back to gradient on load error
   const imgEl = $('#detail-image');
   if (recipe.image_url) {
-    imgEl.innerHTML = `<img src="${escapeHtml(recipe.image_url)}" alt="${escapeHtml(recipe.title)}">`;
+    imgEl.innerHTML = `<img src="${escapeHtml(recipe.image_url)}" alt="${escapeHtml(recipe.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="image-placeholder" style="display:none"></div>`;
   } else {
     imgEl.innerHTML = '<div class="image-placeholder"></div>';
   }

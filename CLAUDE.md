@@ -817,7 +817,7 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 @media (min-width: 768px) {
   #screen-recipe-detail.active { padding-left: calc(var(--page-padding) + 48px); }
   #screen-recipe-detail .screen-header { position: relative; align-items: flex-start; }
-  #screen-recipe-detail .screen-header #detail-back-btn { position: absolute; left: -48px; top: 2px; width: 40px; margin: 0; }
+  #screen-recipe-detail .screen-header #detail-back-btn { position: absolute; left: -48px; top: -15px; width: 40px; margin: 0; }
 }
 
 /* --- Tags: below title, left-aligned, both views --- */
