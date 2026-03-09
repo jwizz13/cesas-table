@@ -798,6 +798,8 @@ Repeated CSS regressions have caused layout breakage. Follow these rules for EVE
 3. **Never remove a `@media` query unless explicitly asked.** Desktop/mobile responsive rules are paired — removing one breaks a view.
 4. **One concern per edit.** If asked to change tags AND the back arrow, make two separate Edit calls, not one big replacement.
 5. **Verify against the reference below** after editing. If a rule from the reference is missing, you broke something.
+6. **Test with varying content lengths.** Layouts must look the same whether the title is 2 words or 8 words. Never use negative margins in flex flow for positioning — use `position: absolute` for elements that must be in a fixed position regardless of content. Negative margins in flex interact unpredictably with `justify-content: space-between` and varying content widths.
+7. **Consistency across all recipes.** Every recipe detail page must render identically on the same device. If a layout trick works for long titles but breaks for short ones (or vice versa), it's wrong.
 
 ### Recipe Detail Header — CSS Reference (canonical)
 
@@ -811,10 +813,11 @@ These rules control the recipe detail header layout. Do NOT remove or alter them
 #screen-recipe-detail .screen-header { flex-wrap: wrap; }
 #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: 100%; width: 40px; margin-bottom: var(--space-xs); }
 
-/* --- Desktop (768px+): extra left padding creates gutter, arrow hangs into it --- */
+/* --- Desktop (768px+): left gutter + absolutely positioned arrow --- */
 @media (min-width: 768px) {
   #screen-recipe-detail.active { padding-left: calc(var(--page-padding) + 48px); }
-  #screen-recipe-detail .screen-header #detail-back-btn { flex-basis: auto; width: 40px; margin-left: -48px; margin-bottom: 0; margin-right: var(--space-sm); }
+  #screen-recipe-detail .screen-header { position: relative; align-items: flex-start; }
+  #screen-recipe-detail .screen-header #detail-back-btn { position: absolute; left: -48px; top: 2px; width: 40px; margin: 0; }
 }
 
 /* --- Tags: below title, left-aligned, both views --- */
