@@ -271,7 +271,7 @@ input, textarea, select {
   margin-bottom: var(--space-xs);
 }
 
-/* Desktop: back arrow inline with title, hanging left */
+/* Desktop: back arrow inline with title */
 @media (min-width: 768px) {
   #screen-recipe-detail .screen-header {
     flex-wrap: nowrap;
@@ -280,8 +280,7 @@ input, textarea, select {
     flex-basis: auto;
     width: 40px;
     margin-bottom: 0;
-    margin-left: -40px;
-    margin-right: var(--space-md);
+    margin-right: var(--space-sm);
   }
 }
 
@@ -577,12 +576,11 @@ input, textarea, select {
   color: var(--color-primary);
 }
 
-/* Desktop: numbers in circles hanging left */
+/* Desktop: numbers in circles inline */
 @media (min-width: 768px) {
   .instruction-step {
     flex-direction: row;
     gap: var(--space-md);
-    margin-left: -40px;
   }
   .instruction-step .step-number {
     width: 24px;
