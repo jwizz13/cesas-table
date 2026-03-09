@@ -283,7 +283,7 @@ input, textarea, select {
   #screen-recipe-detail .screen-header #detail-back-btn {
     position: absolute;
     left: -48px;
-    top: -8px;
+    top: -15px;
     width: 40px;
     margin: 0;
   }
