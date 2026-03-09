@@ -272,10 +272,13 @@ input, textarea, select {
   margin-bottom: var(--space-xs);
 }
 
-/* Desktop: back arrow hangs left of content, title aligns with image */
+/* Desktop: back arrow hangs left of content, aligned with first line of title */
 @media (min-width: 768px) {
   #screen-recipe-detail.active {
     padding-left: calc(var(--page-padding) + 48px);
+  }
+  #screen-recipe-detail .screen-header {
+    align-items: flex-start;
   }
   #screen-recipe-detail .screen-header #detail-back-btn {
     flex-basis: auto;
@@ -283,6 +286,7 @@ input, textarea, select {
     margin-left: -48px;
     margin-bottom: 0;
     margin-right: var(--space-sm);
+    margin-top: 2px;
   }
 }
 
