@@ -271,6 +271,20 @@ input, textarea, select {
   margin-bottom: var(--space-xs);
 }
 
+/* Desktop: back arrow inline with title, hanging left */
+@media (min-width: 768px) {
+  #screen-recipe-detail .screen-header {
+    flex-wrap: nowrap;
+  }
+  #screen-recipe-detail .screen-header #detail-back-btn {
+    flex-basis: auto;
+    width: 40px;
+    margin-bottom: 0;
+    margin-left: -40px;
+    margin-right: var(--space-md);
+  }
+}
+
 .screen-header h2 {
   font-size: var(--font-lg);
   font-weight: var(--weight-bold);
@@ -550,7 +564,7 @@ input, textarea, select {
   line-height: 1.5;
 }
 
-/* Instruction steps */
+/* Instruction steps — stacked on mobile */
 .instruction-step {
   display: flex;
   flex-direction: column;
@@ -561,6 +575,28 @@ input, textarea, select {
   font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   color: var(--color-primary);
+}
+
+/* Desktop: numbers in circles hanging left */
+@media (min-width: 768px) {
+  .instruction-step {
+    flex-direction: row;
+    gap: var(--space-md);
+    margin-left: -40px;
+  }
+  .instruction-step .step-number {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    background: var(--color-primary);
+    color: #FFFFFF;
+    border-radius: var(--radius-circle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-xs);
+    margin-top: 2px;
+  }
 }
 
 .instruction-step .step-text {
