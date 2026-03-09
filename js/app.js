@@ -16,6 +16,7 @@ let userProfile = null;
 let recipes = [];
 let currentRecipe = null;    // recipe being viewed/edited
 let editingRecipeId = null;  // null = adding new, uuid = editing existing
+let pendingImageUrl = null;  // image URL from import or existing recipe
 let activeFilters = { cuisine: [], meal_type: [], protein: [] };
 let searchQuery = '';
 
@@ -394,6 +395,7 @@ function checkExclusions(ingredients) {
 
 function showRecipeForm(recipeId) {
   editingRecipeId = recipeId || null;
+  pendingImageUrl = null;
   const form = $('#recipe-form');
   form.reset();
 
@@ -430,6 +432,7 @@ async function populateFormForEdit(recipeId) {
   $('#form-visibility').value = recipe.visibility || 'private';
   $('#form-instructions').value = recipe.instructions || '';
   $('#form-notes').value = recipe.notes || '';
+  pendingImageUrl = recipe.image_url || null;
 
   // Set chip selections
   setChips('#form-cuisine-chips', recipe.cuisine);
@@ -560,7 +563,8 @@ async function saveRecipe() {
     estimated_cost: $('#form-cost').value || null,
     visibility: $('#form-visibility').value || 'private',
     instructions: $('#form-instructions').value.trim() || null,
-    notes: $('#form-notes').value.trim() || null
+    notes: $('#form-notes').value.trim() || null,
+    image_url: pendingImageUrl || null
   };
 
   const ingredients = collectIngredients();
@@ -1002,6 +1006,7 @@ function normalizeUnit(unit) {
 }
 
 function populateFormFromImport(recipe) {
+  if (recipe.image_url) pendingImageUrl = recipe.image_url;
   if (recipe.title) $('#form-recipe-title').value = recipe.title;
   if (recipe.description) $('#form-description').value = recipe.description;
   if (recipe.prep_time_min) $('#form-prep-time').value = recipe.prep_time_min;
